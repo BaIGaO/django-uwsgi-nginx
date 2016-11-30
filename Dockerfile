@@ -23,6 +23,11 @@ RUN apt-get update && apt-get install -y \
 	python \
 	python-dev \
 	python-setuptools \
+    python-numpy \
+    libopencv-dev \
+    python-pil \
+    python-scipy\
+    python-crypto\
 	nginx \
 	supervisor \
 	sqlite3 \
