@@ -17,6 +17,7 @@ FROM ubuntu:14.04
 MAINTAINER Dockerfiles
 
 # Install required packages and remove the apt packages cache when done.
+COPY sources.list /etc/apt/sources.list
 
 RUN apt-get update && apt-get install -y \
 	git \
@@ -38,6 +39,14 @@ RUN easy_install pip
 # install uwsgi now because it takes a little while
 RUN pip install uwsgi
 
+RUN locale-gen zh_CN.UTF-8 &&\
+    DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales
+RUN locale-gen zh_CN.UTF-8
+ENV LANG zh_CN.UTF-8
+ENV LANGUAGE zh_CN:zh
+ENV LC_ALL zh_CN.UTF-8
+
+
 # setup all the configfiles
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 COPY nginx-app.conf /etc/nginx/sites-available/default
@@ -47,7 +56,7 @@ COPY supervisor-app.conf /etc/supervisor/conf.d/
 # to prevent re-installinig (all your) dependencies when you made a change a line or two in your app. 
 
 COPY app/requirements.txt /home/docker/code/app/
-RUN pip install -r /home/docker/code/app/requirements.txt
+RUN pip install -r /home/docker/code/app/requirements.txt -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
 
 # add (the rest of) our code
 COPY . /home/docker/code/
